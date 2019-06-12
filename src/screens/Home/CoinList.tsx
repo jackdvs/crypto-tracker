@@ -24,7 +24,7 @@ export interface ICoin {
 };
 
 interface Props {
-  coins?: ICoin[];
+  coins?: ICoin[]|any;
 };
 class CoinList extends Component<Props> {
 
