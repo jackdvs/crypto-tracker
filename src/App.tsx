@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, StatusBar} from 'react-native';
+import {View, StyleSheet, StatusBar, Alert} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './store';
 import { createAppContainer } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
-import FavouriteCoinsScreen from "./screens/Favourites/FavouriteCoins";
+import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
 import { Container, Text, Icon } from 'native-base';
 import themeStyle from './styles/theme.style';
 import { createBottomTabNavigator } from 'react-navigation';
@@ -36,6 +36,7 @@ const AppNavigator = createAppContainer(createBottomTabNavigator({
   "Home": HomeScreen,
   "Favourites": FavouriteCoinsScreen,
 }, {
+  initialRouteName: "Favourites",
   defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ focused, horizontal, tintColor }) => {
 
@@ -71,6 +72,11 @@ const AppNavigator = createAppContainer(createBottomTabNavigator({
 
 interface Props {}
 class App extends Component<Props> {
+  
+  constructor(props: any) {
+    super(props);
+  }
+
   render() {
     return (
       <Provider store={store}>

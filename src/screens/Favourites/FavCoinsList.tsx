@@ -7,9 +7,8 @@ import currencyFormatter from "currency-formatter";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
 import Orientation from "react-native-orientation";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { populateTopCoins } from "../../actions/coinActions";
-import AsyncSorage from "@react-native-community/async-storage";
-import AsyncStorage from "@react-native-community/async-storage";
+import { populateTopCoins, populateFavourites, removeFromFavourites } from "../../actions/coinActions";
+import { NavigationScreenProp } from "react-navigation";
 
 const ViewTypes = {
   FULL: 0,
@@ -28,12 +27,16 @@ export interface ICoin {
 };
 
 interface Props {
+  populateFavourites(): void,
+  populateTopCoins(): void,
+  removeFromFavourites(coinName: string): void,
+  navigation: NavigationScreenProp<any, any>;
+  favourites?: string[],
   coins?: ICoin[]|any;
-  search?: string;
-  populateTopCoins?: any;
+  search?: string,
   refreshing?: boolean;
 };
-class CoinList extends Component<Props> {
+class FavCoinsList extends Component<Props> {
 
   private SCREEN_WIDTH: number = Dimensions.get("window").width;
 
@@ -45,6 +48,8 @@ class CoinList extends Component<Props> {
 
     Orientation.addOrientationListener(this._orientationDidChange);
     Orientation.lockToPortrait();
+
+    this.props.navigation.addListener("didFocus", this.onFocus.bind(this));
 
     this.layoutProvider = new LayoutProvider(
       index => {
@@ -88,7 +93,7 @@ class CoinList extends Component<Props> {
               refreshControl: 
                 <RefreshControl
                   refreshing={this.props.refreshing||false}
-                  onRefresh={() => this.props.populateTopCoins()} />
+                  onRefresh={this.onRefresh.bind(this)} />
             }} />
         </View>
         :
@@ -98,15 +103,33 @@ class CoinList extends Component<Props> {
         </View>
         : 
         <View style={styles.noCoins}>
-          <Text style={styles.text}>No results found.</Text>
+          <Text style={styles.text}>You have no favourites :(</Text>
         </View>
         }
       </View>
     )
   }
 
+  componentDidMount() {
+    this.props.populateTopCoins();
+  }
+
+  onFocus() {
+    this.props.populateFavourites();
+  }
+
+  onRefresh() {
+    this.props.populateTopCoins();
+    this.props.populateFavourites();
+  }
+
   _orientationDidChange(orientation: string) {
     this.SCREEN_WIDTH = Dimensions.get("window").width;
+  }
+
+  onLongPressItem(item: ICoin) {
+    this.props.removeFromFavourites(item.name);
+    Alert.alert("Removed favourite", "Removed " + item.name + " from your favourites!");
   }
 
   private getFormattedPrice(coin: ICoin): string {
@@ -118,29 +141,6 @@ class CoinList extends Component<Props> {
 
   private getPercentColour(coin: ICoin): string {
     return coin.price_change_percentage_24h >= 0 ? themeStyle.ACCENT_COLOUR : themeStyle.DANGER_COLOUR;
-  }
-
-  async onLongPressItem(item: ICoin) {
-
-    let favourites: string|any = await AsyncSorage.getItem("favourites");
-    if (!favourites) {
-      await AsyncSorage.setItem("favourites", JSON.stringify([]));
-    }
-    
-    favourites = await AsyncSorage.getItem("favourites");
-    favourites = JSON.parse(favourites);
-
-
-    if (!favourites.includes(item.name)) {
-      favourites.push(item.name);
-      await AsyncStorage.setItem("favourites", JSON.stringify(favourites));
-      favourites = await AsyncStorage.getItem("favourites");
-      Alert.alert("Added to favourites", "Added " + item.name + " to your favourites!");
-    }
-    else {
-      Alert.alert("Aready exists", item.name + " is already in your favourites.");
-    }
-
   }
 
   private renderItem(type: any, data: any) {
@@ -158,10 +158,10 @@ class CoinList extends Component<Props> {
             </Text>
           </View>
           <View style={{ ...styles.listItemRight,}}>
-            <Text style={{ ...styles.price, ...styles.text}}>
+            <Text style={styles.text}>
               { this.getFormattedPrice(item) }
             </Text>
-            <Text style={{ ...styles.percent, ...styles.text, color: this.getPercentColour(item) }}>
+            <Text style={{ ...styles.text, color: this.getPercentColour(item) }}>
               { item.price_change_percentage_24h.toFixed(2) }%
             </Text>
           </View>
@@ -210,12 +210,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
-  price: {
-
-  },
-  percent: {
-    
-  },
   noCoins: {
     flex: 1,
     justifyContent: "center",
@@ -224,21 +218,23 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state: any): any {
-  
-  const search: string = state.coin.searchText;
+
   const coins: ICoin[] = state.coin.coins;
+  const favourites = state.coin.favourites;
 
   return {
-    coins: coins.filter(coin => search === "" ? coin : coin.name.toLowerCase().indexOf(search.toLowerCase()) > -1),
-    search: state.coin.search,
+    coins: coins.filter(coin => favourites.includes(coin.name)),
     refreshing: state.coin.isRefreshing,
+    favourites: state.coin.favourites,
   }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>): any {
   return {
     populateTopCoins: () => dispatch(populateTopCoins()),
+    populateFavourites: () => dispatch(populateFavourites()),
+    removeFromFavourites: (coinName: string) => dispatch(removeFromFavourites(coinName)),
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CoinList);
+export default connect(mapStateToProps, mapDispatchToProps)(FavCoinsList);

@@ -2,10 +2,61 @@ export const ACTION_SET_COINS: string = "ACTION_SET_COINS";
 export const ACTION_POPULATE_TOP_COINS: string = "ACTION_POPULATE_TOP_COINS";
 export const ACTION_SEARCH_TEXT: string = "ACTION_SEARCH_TEXT";
 export const ACTION_SET_REFRESHING: string = "ACTION_SET_REFRESHING";
+export const ACTION_SET_FAVOURITES: string = "ACTION_SET_FAVOURITES";
 
 import axios, { AxiosResponse } from "axios";
 import { Dispatch } from "react";
-import { Alert } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+
+export function populateFavourites() {
+
+  return async function (dispatch: Dispatch<any>) {
+
+    const _favourites = await AsyncStorage.getItem("favourites");
+
+    if (!_favourites) {
+      await AsyncStorage.setItem("favourites", JSON.stringify([]));
+    }
+
+    const __favourites: any = await AsyncStorage.getItem("favourites");
+
+    const favourites: string[] = JSON.parse(__favourites);
+
+    dispatch({
+      type: ACTION_SET_FAVOURITES,
+      payload: {
+        favourites: favourites,
+      }
+    })
+  }
+
+}
+
+export function removeFromFavourites(coinName: string) {
+
+  return async function (dispatch: Dispatch<any>) {
+
+    const _favourites = await AsyncStorage.getItem("favourites");
+
+    if (!_favourites) {
+      await AsyncStorage.setItem("favourites", JSON.stringify([]));
+    }
+
+    const __favourites: any = await AsyncStorage.getItem("favourites");
+    const favourites: string[] = JSON.parse(__favourites);
+    const filtered = favourites.filter(name => name !== coinName);
+    await AsyncStorage.setItem("favourites", JSON.stringify(filtered));
+
+    dispatch({
+      type: ACTION_SET_FAVOURITES,
+      payload: {
+        favourites: filtered,
+      },
+    });
+
+  }
+
+}
 
 export function searchCoin(coinName: string) {
   return {
