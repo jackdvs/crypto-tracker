@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import currencyFormatter from "currency-formatter";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
 import Orientation from "react-native-orientation";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const ViewTypes = {
   FULL: 0,
@@ -25,6 +26,8 @@ export interface ICoin {
 
 interface Props {
   coins?: ICoin[]|any;
+  search?: string;
+  searchCoin?: (searchText: string) => void,
 };
 class CoinList extends Component<Props> {
 
@@ -60,10 +63,32 @@ class CoinList extends Component<Props> {
   render() {
     return (
       <View style={styles.coinList}>
-        <RecyclerListView
-          layoutProvider={this.layoutProvider}
-          dataProvider={this.dataProvider.cloneWithRows(this.props.coins)}
-          rowRenderer={this.renderItem} />
+        { this.props.coins.length > 0 ?
+        <View style={{ flex: 1, }}>
+          <View style={{ flexDirection: 'row', padding: 10, backgroundColor: themeStyle.BACKGROUND_COLOUR, }}>
+            <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-start', marginLeft: 15 }}>
+              <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>Name</Text>
+            </View>
+            <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-end', marginRight: 15 }}>
+              <Text style={{ marginRight: 30, fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>Price</Text>
+              <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>24H</Text>
+            </View>
+          </View>
+          <RecyclerListView
+            layoutProvider={this.layoutProvider}
+            dataProvider={this.dataProvider.cloneWithRows(this.props.coins)}
+            rowRenderer={this.renderItem} />
+        </View>
+        :
+        this.props.search === "" ?
+        <View style={styles.noCoins}>
+          <Text style={styles.text}>Loading coins...</Text>
+        </View>
+        : 
+        <View style={styles.noCoins}>
+          <Text style={styles.text}>No results found.</Text>
+        </View>
+        }
       </View>
     )
   }
@@ -71,7 +96,7 @@ class CoinList extends Component<Props> {
   _orientationDidChange(orientation: string) {
     this.SCREEN_WIDTH = Dimensions.get("window").width;
   }
-  
+
   private getFormattedPrice(coin: ICoin): string {
     const _price = coin.current_price;
     const price = _price < 0.1 ? _price < 0.01 ? _price.toFixed(6) : _price.toFixed(4) : _price.toFixed(2)
@@ -83,12 +108,17 @@ class CoinList extends Component<Props> {
     return coin.price_change_percentage_24h >= 0 ? themeStyle.ACCENT_COLOUR : themeStyle.DANGER_COLOUR;
   }
 
+  onPressItem(item: ICoin) {
+    Alert.alert(item.name, "You pressed on " + item.name);
+  }
+
   private renderItem(type: any, data: any) {
 
     const item: ICoin = data;
 
     if (type === ViewTypes.FULL) {
       return (
+        <TouchableOpacity onPress={() => this.onPressItem(item)}>
         <View style={styles.listItem}>
           <View style={styles.listItemLeft}>
             <Image source={{ uri: item.image }} style={styles.icon} />
@@ -105,6 +135,7 @@ class CoinList extends Component<Props> {
             </Text>
           </View>
         </View>
+        </TouchableOpacity>
       );
     }
     else return null;
@@ -153,12 +184,22 @@ const styles = StyleSheet.create({
   },
   percent: {
     
+  },
+  noCoins: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   }
 });
 
 function mapStateToProps(state: any): any {
+  
+  const search: string = state.coin.searchText;
+  const coins: ICoin[] = state.coin.coins;
+
   return {
-    coins: state.coin.coins,
+    coins: coins.filter(coin => search === "" ? coin : coin.name.toLowerCase().indexOf(search.toLowerCase()) > -1),
+    search: search,
   }
 }
 

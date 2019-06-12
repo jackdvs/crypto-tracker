@@ -1,14 +1,18 @@
 export const ACTION_SET_COINS: string = "ACTION_SET_COINS";
 export const ACTION_POPULATE_TOP_COINS: string = "ACTION_POPULATE_TOP_COINS";
+export const ACTION_SEARCH_TEXT: string = "ACTION_SEARCH_TEXT";
 
 import axios, { AxiosResponse } from "axios";
 import { Dispatch } from "react";
 
-
-export interface ICoinDispatch {
-  setCoins: (payload: any) => void,
-  populateTopCoins: () => void,
-};
+export function searchCoin(coinName: string) {
+  return {
+    type: ACTION_SEARCH_TEXT,
+    payload: {
+      searchText: coinName
+    }
+  }
+}
 
 export function setCoins(payload: any) {
   return {

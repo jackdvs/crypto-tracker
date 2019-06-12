@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import { View, Text } from "native-base";
 import { StyleSheet } from "react-native";
 import themeStyle from "../../styles/theme.style";
+import { NavigationScreenProp } from "react-navigation";
 
 interface Props {
-  navigation: any;
+  navigation: NavigationScreenProp<any, any>;
 };
 export default class HomeScreen extends Component<Props> {
+
 
   render() {
     return (

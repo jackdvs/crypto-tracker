@@ -1,37 +1,48 @@
 import React, { Component } from "react";
 import { StyleSheet} from "react-native";
-import { View, Text } from "native-base";
+import { Text, Header, Container, Item, Icon, Button, Input } from "native-base";
 import themeStyle from "../../styles/theme.style";
-import { ICoinDispatch, populateTopCoins } from "../../actions/coinActions";
+import { populateTopCoins, searchCoin } from "../../actions/coinActions";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import CoinList from "./CoinList";
+import { NavigationScreenProp } from "react-navigation";
+import SearchBar from "./SearchBar";
 
 
 
 interface Props {
-
+  navigation: NavigationScreenProp<any, any>;
+  search?: string;
+  searchCoin?: any;
+  populateTopCoins?: any;
 };
-class HomeScreen extends Component<Props & ICoinDispatch> {
+class HomeScreen extends Component<Props> {
 
+  searchInput: any;
+
+  onSearchClear() {
+
+    const searchSet: boolean = this.props.search !== "";
+
+    if (searchSet) {
+      this.props.searchCoin("");
+      this.searchInput._root.clear();
+      this.searchInput._root.blur();
+    }
+
+  }
 
   render() {
+
     return (
-      <View style={styles.container}>
+      <Container style={styles.container}>
 
-        <View style={{ flexDirection: 'row', padding: 20 }}>
-          <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-start', marginLeft: 15 }}>
-            <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>Name</Text>
-          </View>
-          <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-end', marginRight: 15 }}>
-            <Text style={{ marginRight: 30, fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>Price</Text>
-            <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>24H</Text>
-          </View>
-        </View>
-
+        <SearchBar />
+        
         <CoinList />
 
-      </View>
+      </Container>
     )
   }
 
@@ -46,17 +57,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: themeStyle.BACKGROUND_COLOUR
   },
-  text: {
-    color: themeStyle.TEXT_COLOUR,
-    fontFamily: themeStyle.FONT_DEFAULT,
-    marginLeft: 10,
-  },
 });
+
+function mapStateToProps(state: any) {
+  return {
+    search: state.coin.searchText,
+  }
+}
 
 function mapDispatchToProps(dispatch: Dispatch<any>): any {
   return {
     populateTopCoins: () => dispatch(populateTopCoins()),
+    searchCoin: (coinName: string) => dispatch(searchCoin(coinName)),
   }
 }
 
-export default connect(null, mapDispatchToProps)(HomeScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
