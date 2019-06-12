@@ -1,5 +1,5 @@
-import React, { Component, ComponentClass } from "react";
-import { StyleSheet, ScrollView, FlatList, Image, ListView, SectionList, SectionListData, Dimensions, Alert } from "react-native";
+import React, { Component, ComponentClass, Dispatch } from "react";
+import { StyleSheet, ScrollView, FlatList, Image, ListView, SectionList, SectionListData, Dimensions, Alert, RefreshControl } from "react-native";
 import { View, Text } from "native-base";
 import themeStyle from "../../styles/theme.style";
 import { connect } from "react-redux";
@@ -7,6 +7,7 @@ import currencyFormatter from "currency-formatter";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
 import Orientation from "react-native-orientation";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { populateTopCoins } from "../../actions/coinActions";
 
 const ViewTypes = {
   FULL: 0,
@@ -27,7 +28,8 @@ export interface ICoin {
 interface Props {
   coins?: ICoin[]|any;
   search?: string;
-  searchCoin?: (searchText: string) => void,
+  populateTopCoins?: any;
+  refreshing?: boolean;
 };
 class CoinList extends Component<Props> {
 
@@ -38,8 +40,10 @@ class CoinList extends Component<Props> {
 
   constructor(props: any) {
     super(props);
+
     Orientation.addOrientationListener(this._orientationDidChange);
     Orientation.lockToPortrait();
+
     this.layoutProvider = new LayoutProvider(
       index => {
         return ViewTypes.FULL;
@@ -77,7 +81,13 @@ class CoinList extends Component<Props> {
           <RecyclerListView
             layoutProvider={this.layoutProvider}
             dataProvider={this.dataProvider.cloneWithRows(this.props.coins)}
-            rowRenderer={this.renderItem} />
+            rowRenderer={this.renderItem}
+            scrollViewProps={{
+              refreshControl: 
+                <RefreshControl
+                  refreshing={this.props.refreshing||false}
+                  onRefresh={() => this.props.populateTopCoins()} />
+            }} />
         </View>
         :
         this.props.search === "" ?
@@ -199,8 +209,15 @@ function mapStateToProps(state: any): any {
 
   return {
     coins: coins.filter(coin => search === "" ? coin : coin.name.toLowerCase().indexOf(search.toLowerCase()) > -1),
-    search: search,
+    search: state.coin.search,
+    refreshing: state.coin.isRefreshing,
   }
 }
 
-export default connect(mapStateToProps)(CoinList);
+function mapDispatchToProps(dispatch: Dispatch<any>): any {
+  return {
+    populateTopCoins: () => dispatch(populateTopCoins()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CoinList);

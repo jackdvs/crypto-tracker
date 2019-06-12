@@ -39,7 +39,6 @@ class SearchBar extends Component<Props> {
           <Input
             ref={(input) => { this.searchInput = input }}
             getRef={(input) => { this.searchInput = input }}
-            autoFocus
             autoCorrect={false}
             placeholder="Search for coin"
             style={{ color: themeStyle.TEXT_COLOUR }}
