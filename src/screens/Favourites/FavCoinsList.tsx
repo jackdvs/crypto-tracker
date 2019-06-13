@@ -1,5 +1,5 @@
-import React, { Component, ComponentClass, Dispatch } from "react";
-import { StyleSheet, ScrollView, FlatList, Image, ListView, SectionList, SectionListData, Dimensions, Alert, RefreshControl } from "react-native";
+import React, { Component, Dispatch } from "react";
+import { StyleSheet, Image, Dimensions, Alert, RefreshControl } from "react-native";
 import { View, Text } from "native-base";
 import themeStyle from "../../styles/theme.style";
 import { connect } from "react-redux";
@@ -27,9 +27,9 @@ export interface ICoin {
 };
 
 interface Props {
-  populateFavourites(): void,
-  populateTopCoins(): void,
-  removeFromFavourites(coinName: string): void,
+  populateFavourites?: any,
+  populateTopCoins?: any,
+  removeFromFavourites?: any,
   navigation: NavigationScreenProp<any, any>;
   favourites?: string[],
   coins?: ICoin[]|any;
@@ -127,6 +127,10 @@ class FavCoinsList extends Component<Props> {
     this.SCREEN_WIDTH = Dimensions.get("window").width;
   }
 
+  onPressItem(item: ICoin) {
+    this.props.navigation.navigate("CoinDetails", { coin: item });
+  }
+
   onLongPressItem(item: ICoin) {
     this.props.removeFromFavourites(item.name);
     Alert.alert("Removed favourite", "Removed " + item.name + " from your favourites!");
@@ -149,7 +153,9 @@ class FavCoinsList extends Component<Props> {
 
     if (type === ViewTypes.FULL) {
       return (
-        <TouchableOpacity onLongPress={() => this.onLongPressItem(item)}>
+        <TouchableOpacity
+          onPress={() => this.onPressItem(item)}
+          onLongPress={() => this.onLongPressItem(item)}>
         <View style={styles.listItem}>
           <View style={styles.listItemLeft}>
             <Image source={{ uri: item.image }} style={styles.icon} />

@@ -5,54 +5,94 @@ import store from './store';
 import { createAppContainer } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container, Text, Icon } from 'native-base';
+import { Container, Icon, Text } from 'native-base';
 import themeStyle from './styles/theme.style';
 import { createBottomTabNavigator } from 'react-navigation';
+import CoinDetails from './screens/CoinDetails/CoinDetails';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-// const AppNavigator = createAppContainer(createStackNavigator({
-//   "Home": HomeScreen,
-//   "Favourites": FavouriteCoinsScreen,
-// }, {
-//   initialRouteName: "Home",
-//   headerMode: "none",
-// }));
 
 interface IconProps {
   routeName: string;
   iconName: string;
   tintColour: any;
 }
-const IconComponent = (props: IconProps) => (
-  <View >
-    <Icon 
-      type="MaterialIcons"
-      name={props.iconName}
-      fontSize={24}
-      style={{ color: props.tintColour }} />
-  </View>
-)
+const IconComponent = (props: IconProps) => {
+  return (
+    <View>
+      <Icon
+        type="MaterialIcons"
+        name={props.iconName}
+        fontSize={themeStyle.FONT_SIZE_TABBAR}
+        style={{ color: props.tintColour, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
+    </View>
+  );
+}
 
-const AppNavigator = createAppContainer(createBottomTabNavigator({
-  "Home": HomeScreen,
-  "Favourites": FavouriteCoinsScreen,
+const TabBar = (props: any) => {
+
+  const {
+    renderIcon,
+    getLabelText,
+    activeTintColor,
+    inactiveTintColor,
+    onTabPress,
+    onTabLongPress,
+    getAccessibilityLabel,
+    navigation
+  } = props;
+
+  const { routes, index: activeRouteIndex, routeName } = navigation.state;
+
+  return (
+    <View style={styles.tabBar}>
+
+      {routes
+        .filter((route: any, index: number) => route.routeName !== "CoinDetails")
+        .map((route: any, index: number) => {
+        
+        const isRouteActive = index === activeRouteIndex;
+        const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
+
+        return (
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.tabBarItem}
+            key={index}
+            onPress={() => onTabPress({ route })}
+            onLongPress={() => onTabLongPress({ route })}
+            accessibilityLabel={getAccessibilityLabel({ route })}
+          >
+            {renderIcon({ route, focused: isRouteActive, tintColor })}
+          </TouchableOpacity>
+        )
+
+      })}
+
+    </View>
+  );
+
+}
+
+const TabNavigator = createBottomTabNavigator({
+  Home: HomeScreen,
+  Favourites: FavouriteCoinsScreen,
+  CoinDetails: CoinDetails,
 }, {
-  initialRouteName: "Favourites",
+  initialRouteName: "Home",
+  tabBarComponent: TabBar,
   defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ focused, horizontal, tintColor }) => {
-
       const { routeName } =  navigation.state;
-
       let iconName: string = "";
-
       switch (routeName) {
         case "Home":
           iconName = "home";
           break;
-        case "Favourites": 
+        case "Favourites":
           iconName = "favorite";
           break;
       }
-
       return <IconComponent iconName={iconName} routeName={routeName} tintColour={tintColor} />
     }
   }),
@@ -68,11 +108,13 @@ const AppNavigator = createAppContainer(createBottomTabNavigator({
       borderTopWidth: 0,
     }
   }
-}));
+});
+
+const AppNavigator = createAppContainer(TabNavigator);
 
 interface Props {}
 class App extends Component<Props> {
-  
+
   constructor(props: any) {
     super(props);
   }
@@ -82,7 +124,7 @@ class App extends Component<Props> {
       <Provider store={store}>
         <Container style={styles.container}>
           <StatusBar backgroundColor={themeStyle.STATUS_BAR_COLOUR} />
-          <AppNavigator></AppNavigator>
+          <AppNavigator />
         </Container>
       </Provider>
     );
@@ -90,6 +132,19 @@ class App extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  tabBar: {
+    height: 50,
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: themeStyle.BACKGROUND_COLOUR,
+    flexDirection: "row",
+  },
+  tabBarItem: {
+    flex: 1,
+    justifyContent: "center",
+    paddingLeft: 25,
+    paddingRight: 25,
+  },
   container: {
     flex: 1,
   }

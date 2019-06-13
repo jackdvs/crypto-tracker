@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, Header, Item, Icon, Button, Input } from "native-base";
 import themeStyle from "../../styles/theme.style";
-import { ICoinDispatch, searchCoin } from "../../actions/coinActions";
+import { searchCoin } from "../../actions/coinActions";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import { NavigationScreenProp } from "react-navigation";
