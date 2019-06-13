@@ -10,6 +10,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { populateTopCoins } from "../../actions/coinActions";
 import AsyncSorage from "@react-native-community/async-storage";
 import AsyncStorage from "@react-native-community/async-storage";
+import { NavigationScreenProp } from "react-navigation";
 
 const ViewTypes = {
   FULL: 0,
@@ -29,6 +30,7 @@ export interface ICoin {
 
 interface Props {
   coins?: ICoin[]|any;
+  navigation: NavigationScreenProp<any, any>;
   search?: string;
   populateTopCoins?: any;
   refreshing?: boolean;
@@ -120,6 +122,10 @@ class CoinList extends Component<Props> {
     return coin.price_change_percentage_24h >= 0 ? themeStyle.ACCENT_COLOUR : themeStyle.DANGER_COLOUR;
   }
 
+  onPressCoin(item: ICoin) {
+    this.props.navigation.navigate("CoinDetails", { coin: item });
+  }
+
   async onLongPressItem(item: ICoin) {
 
     let favourites: string|any = await AsyncSorage.getItem("favourites");
@@ -149,7 +155,9 @@ class CoinList extends Component<Props> {
 
     if (type === ViewTypes.FULL) {
       return (
-        <TouchableOpacity onLongPress={() => this.onLongPressItem(item)}>
+        <TouchableOpacity
+          onPress={() => this.onPressCoin(item)}
+          onLongPress={() => this.onLongPressItem(item)}>
         <View style={styles.listItem}>
           <View style={styles.listItemLeft}>
             <Image source={{ uri: item.image }} style={styles.icon} />

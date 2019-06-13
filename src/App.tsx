@@ -5,7 +5,7 @@ import store from './store';
 import { createAppContainer } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container, Icon, Text } from 'native-base';
+import { Container, Icon } from 'native-base';
 import themeStyle from './styles/theme.style';
 import { createBottomTabNavigator } from 'react-navigation';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
@@ -21,7 +21,7 @@ const IconComponent = (props: IconProps) => {
   return (
     <View>
       <Icon
-        type="MaterialIcons"
+        type="FontAwesome"
         name={props.iconName}
         fontSize={themeStyle.FONT_SIZE_TABBAR}
         style={{ color: props.tintColour, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
@@ -90,7 +90,7 @@ const TabNavigator = createBottomTabNavigator({
           iconName = "home";
           break;
         case "Favourites":
-          iconName = "favorite";
+          iconName = "star";
           break;
       }
       return <IconComponent iconName={iconName} routeName={routeName} tintColour={tintColor} />
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
   tabBarItem: {
     flex: 1,
     justifyContent: "center",
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   container: {
     flex: 1,

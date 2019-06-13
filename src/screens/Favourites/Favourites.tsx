@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View } from "native-base";
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet } from "react-native";
 import themeStyle from "../../styles/theme.style";
 import { NavigationScreenProp } from "react-navigation";
 import FavCoinsList from "./FavCoinsList";

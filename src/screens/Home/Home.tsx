@@ -40,7 +40,7 @@ class HomeScreen extends Component<Props> {
 
         <SearchBar />
         
-        <CoinList />
+        <CoinList navigation={this.props.navigation} />
 
       </Container>
     )
