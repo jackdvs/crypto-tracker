@@ -1,22 +1,39 @@
 import React, { Component } from "react";
-import { Header, Left, Body, Right,Icon, Container, Title } from "native-base";
-import { StyleSheet, Image } from "react-native";
+import { Header, Left, Body, Right,Icon, Container, Title, View, Text } from "native-base";
+import { StyleSheet, Image, Alert } from "react-native";
 import themeStyle from "../../styles/theme.style";
 import { NavigationScreenProp } from "react-navigation";
 import { ICoin } from "../Favourites/FavCoinsList";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import CoinInfoList from "./CoinInfoList";
+import { ICoinInfo } from "./ICoinInfo";
+import { connect } from "react-redux";
 
 
 interface Props {
   navigation: NavigationScreenProp<any>;
+  loading: boolean|any;
 };
-export default class CoinDetails extends Component<Props> {
+class CoinDetails extends Component<Props> {
 
   onClose() {
-    this.props.navigation.goBack();
+    this.props.navigation.goBack(null);
   }
 
   render() {
+
+    if (this.props.loading) {
+      return (
+        <Container style={{
+          ...styles.container,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+          <Text style={styles.text}>Loading coin data...</Text>
+        </Container>
+      )
+    }
 
     const { navigation } = this.props;
     const coin: ICoin = navigation.getParam("coin");
@@ -44,6 +61,7 @@ export default class CoinDetails extends Component<Props> {
             </TouchableOpacity>
           </Right>
         </Header>
+        <CoinInfoList />
       </Container>
     )
   }
@@ -65,3 +83,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   }
 });
+
+
+
+function mapStateToProps(state: any): any {
+  return {
+    loading: state.coin.isCoinInfoLoading,
+  }
+}
+
+
+export default connect(mapStateToProps)(CoinDetails);

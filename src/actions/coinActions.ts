@@ -3,10 +3,60 @@ export const ACTION_POPULATE_TOP_COINS: string = "ACTION_POPULATE_TOP_COINS";
 export const ACTION_SEARCH_TEXT: string = "ACTION_SEARCH_TEXT";
 export const ACTION_SET_REFRESHING: string = "ACTION_SET_REFRESHING";
 export const ACTION_SET_FAVOURITES: string = "ACTION_SET_FAVOURITES";
+export const ACTION_SET_SELECTED_COIN_DETAILS = "ACTION_SET_SELECTED_COIN_DETAILS";
+export const ACTION_SET_COIN_LOADING: string = "ACTION_SET_COIN_LOADING";
 
 import axios, { AxiosResponse } from "axios";
 import { Dispatch } from "react";
 import AsyncStorage from "@react-native-community/async-storage";
+import { ICoinInfo } from "../screens/CoinDetails/ICoinInfo";
+
+export function setSelectedCoinInfo(id: string) {
+
+  return async function (dispatch: Dispatch<any>) {
+    
+    await dispatch({
+      type: ACTION_SET_COIN_LOADING,
+      payload: {
+        isCoinInfoLoading: true,
+      }
+    });
+
+    try {
+
+      const res: AxiosResponse = await axios.get(`https://api.coingecko.com/api/v3/coins/${id}`);
+      const info: ICoinInfo = res.data;
+
+      await dispatch({
+        type: ACTION_SET_SELECTED_COIN_DETAILS,
+        payload: {
+          selectedCoinInfo:  info,
+        }
+      });
+
+      await dispatch({
+        type: ACTION_SET_COIN_LOADING,
+        payload: {
+          isCoinInfoLoading: false,
+        }
+      });
+
+    }
+    catch (err) {
+      console.log("error: " + err.message);
+      dispatch({
+        type: ACTION_SET_COIN_LOADING,
+        payload: {
+          isCoinInfoLoading: true,
+        }
+      });
+
+    }
+    
+  }
+
+}
+
 
 export function populateFavourites() {
 

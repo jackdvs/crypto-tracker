@@ -7,7 +7,7 @@ import currencyFormatter from "currency-formatter";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
 import Orientation from "react-native-orientation";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { populateTopCoins, populateFavourites, removeFromFavourites } from "../../actions/coinActions";
+import { populateTopCoins, populateFavourites, removeFromFavourites, setSelectedCoinInfo } from "../../actions/coinActions";
 import { NavigationScreenProp } from "react-navigation";
 
 const ViewTypes = {
@@ -27,13 +27,14 @@ export interface ICoin {
 };
 
 interface Props {
-  populateFavourites?: any,
-  populateTopCoins?: any,
-  removeFromFavourites?: any,
+  setSelectedCoinInfo?: any;
+  populateFavourites?: any;
+  populateTopCoins?: any;
+  removeFromFavourites?: any;
   navigation: NavigationScreenProp<any, any>;
-  favourites?: string[],
+  favourites?: string[];
   coins?: ICoin[]|any;
-  search?: string,
+  search?: string;
   refreshing?: boolean;
 };
 class FavCoinsList extends Component<Props> {
@@ -47,7 +48,6 @@ class FavCoinsList extends Component<Props> {
     super(props);
 
     Orientation.addOrientationListener(this._orientationDidChange);
-    Orientation.lockToPortrait();
 
     this.props.navigation.addListener("didFocus", this.onFocus.bind(this));
 
@@ -129,6 +129,7 @@ class FavCoinsList extends Component<Props> {
 
   onPressItem(item: ICoin) {
     this.props.navigation.navigate("CoinDetails", { coin: item });
+    this.props.setSelectedCoinInfo(item.id);
   }
 
   onLongPressItem(item: ICoin) {
@@ -240,7 +241,9 @@ function mapDispatchToProps(dispatch: Dispatch<any>): any {
     populateTopCoins: () => dispatch(populateTopCoins()),
     populateFavourites: () => dispatch(populateFavourites()),
     removeFromFavourites: (coinName: string) => dispatch(removeFromFavourites(coinName)),
+    setSelectedCoinInfo: (id: string) => dispatch(setSelectedCoinInfo(id)),
   }
 }
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(FavCoinsList);

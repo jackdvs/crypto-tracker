@@ -7,7 +7,7 @@ import currencyFormatter from "currency-formatter";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
 import Orientation from "react-native-orientation";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { populateTopCoins } from "../../actions/coinActions";
+import { populateTopCoins, setSelectedCoinInfo, setActiveScreenName } from "../../actions/coinActions";
 import AsyncSorage from "@react-native-community/async-storage";
 import AsyncStorage from "@react-native-community/async-storage";
 import { NavigationScreenProp } from "react-navigation";
@@ -34,8 +34,10 @@ interface Props {
   search?: string;
   populateTopCoins?: any;
   refreshing?: boolean;
+  setSelectedCoinInfo: (id: string) => void;
+  setActiveScreenName: (name: string) => void;
 };
-class CoinList extends Component<Props> {
+export class CoinList extends Component<Props> {
 
   private SCREEN_WIDTH: number = Dimensions.get("window").width;
 
@@ -46,7 +48,6 @@ class CoinList extends Component<Props> {
     super(props);
 
     Orientation.addOrientationListener(this._orientationDidChange);
-    Orientation.lockToPortrait();
 
     this.layoutProvider = new LayoutProvider(
       index => {
@@ -66,6 +67,13 @@ class CoinList extends Component<Props> {
       }
     );
     this.renderItem = this.renderItem.bind(this);
+  }
+
+  public static getFormattedPrice(coinPrice: number): string {
+    const _price = coinPrice;
+    const price = _price < 0.1 ? _price < 0.01 ? _price.toFixed(6) : _price.toFixed(4) : _price.toFixed(2)
+    const currencyInfo = currencyFormatter.findCurrency("USD");
+    return currencyInfo.symbolOnLeft ? `${currencyInfo.symbol}${price}` : `${price}${currencyInfo.symbol}`
   }
 
   render() {
@@ -94,7 +102,7 @@ class CoinList extends Component<Props> {
             }} />
         </View>
         :
-        this.props.search === "" ?
+        this.props.coins.length <= 0 && this.props.search === "" ?
         <View style={styles.noCoins}>
           <Text style={styles.text}>Loading coins...</Text>
         </View>
@@ -111,19 +119,13 @@ class CoinList extends Component<Props> {
     this.SCREEN_WIDTH = Dimensions.get("window").width;
   }
 
-  private getFormattedPrice(coin: ICoin): string {
-    const _price = coin.current_price;
-    const price = _price < 0.1 ? _price < 0.01 ? _price.toFixed(6) : _price.toFixed(4) : _price.toFixed(2)
-    const currencyInfo = currencyFormatter.findCurrency("USD");
-    return currencyInfo.symbolOnLeft ? `${currencyInfo.symbol}${price}` : `${price}${currencyInfo.symbol}`
-  }
-
   private getPercentColour(coin: ICoin): string {
     return coin.price_change_percentage_24h >= 0 ? themeStyle.ACCENT_COLOUR : themeStyle.DANGER_COLOUR;
   }
 
   onPressCoin(item: ICoin) {
     this.props.navigation.navigate("CoinDetails", { coin: item });
+    this.props.setSelectedCoinInfo(item.id);
   }
 
   async onLongPressItem(item: ICoin) {
@@ -167,7 +169,7 @@ class CoinList extends Component<Props> {
           </View>
           <View style={{ ...styles.listItemRight,}}>
             <Text style={{ ...styles.price, ...styles.text}}>
-              { this.getFormattedPrice(item) }
+              { CoinList.getFormattedPrice(item.current_price) }
             </Text>
             <Text style={{ ...styles.percent, ...styles.text, color: this.getPercentColour(item) }}>
               { item.price_change_percentage_24h.toFixed(2) }%
@@ -238,7 +240,7 @@ function mapStateToProps(state: any): any {
 
   return {
     coins: coins.filter(coin => search === "" ? coin : coin.name.toLowerCase().indexOf(search.toLowerCase()) > -1),
-    search: state.coin.search,
+    search: state.coin.searchText,
     refreshing: state.coin.isRefreshing,
   }
 }
@@ -246,6 +248,8 @@ function mapStateToProps(state: any): any {
 function mapDispatchToProps(dispatch: Dispatch<any>): any {
   return {
     populateTopCoins: () => dispatch(populateTopCoins()),
+    setSelectedCoinInfo: (id: string) => dispatch(setSelectedCoinInfo(id)),
+    setActiveScreenName: (name: string) => setActiveScreenName(name),
   }
 }
 

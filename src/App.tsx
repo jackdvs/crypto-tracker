@@ -10,7 +10,7 @@ import themeStyle from './styles/theme.style';
 import { createBottomTabNavigator } from 'react-navigation';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import Orientation from "react-native-orientation";
 
 interface IconProps {
   routeName: string;
@@ -117,6 +117,9 @@ class App extends Component<Props> {
 
   constructor(props: any) {
     super(props);
+    
+    Orientation.lockToPortrait();
+    
   }
 
   render() {
