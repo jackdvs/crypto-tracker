@@ -5,12 +5,14 @@ import store from './store';
 import { createAppContainer } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container, Icon } from 'native-base';
+import { Container, Icon, Text } from 'native-base';
 import themeStyle from './styles/theme.style';
 import { createBottomTabNavigator } from 'react-navigation';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from "react-native-orientation";
+import {AdMobBanner} from "react-native-admob";
+
 
 interface IconProps {
   routeName: string;
@@ -45,30 +47,42 @@ const TabBar = (props: any) => {
   const { routes, index: activeRouteIndex, routeName } = navigation.state;
 
   return (
-    <View style={styles.tabBar}>
+    <View>
+      
+      <View style={{ height: 60, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
+        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, .1)"}}>
+          <AdMobBanner
+              adSize="smartBanner"
+              adUnitID="ca-app-pub-2008717089598745/5600665527"
+              onAdFailedToLoad={(error: any) => console.log('[ERROR]: error fetching ad: ' + error.message)} />
+        </View>
+      </View>
 
-      {routes
-        .filter((route: any, index: number) => route.routeName !== "CoinDetails")
-        .map((route: any, index: number) => {
-        
-        const isRouteActive = index === activeRouteIndex;
-        const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
+      <View style={styles.tabBar}>
 
-        return (
-          <TouchableOpacity
-            activeOpacity={1}
-            style={styles.tabBarItem}
-            key={index}
-            onPress={() => onTabPress({ route })}
-            onLongPress={() => onTabLongPress({ route })}
-            accessibilityLabel={getAccessibilityLabel({ route })}
-          >
-            {renderIcon({ route, focused: isRouteActive, tintColor })}
-          </TouchableOpacity>
-        )
+        {routes
+          .filter((route: any, index: number) => route.routeName !== "CoinDetails")
+          .map((route: any, index: number) => {
+          
+          const isRouteActive = index === activeRouteIndex;
+          const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
 
-      })}
+          return (
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.tabBarItem}
+              key={index}
+              onPress={() => onTabPress({ route })}
+              onLongPress={() => onTabLongPress({ route })}
+              accessibilityLabel={getAccessibilityLabel({ route })}
+            >
+              {renderIcon({ route, focused: isRouteActive, tintColor })}
+            </TouchableOpacity>
+          )
 
+        })}
+
+      </View>
     </View>
   );
 
