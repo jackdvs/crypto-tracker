@@ -33,7 +33,7 @@ class SearchBar extends Component<Props> {
     const searchSet: boolean = this.props.search !== "";
 
     return (
-      <Header searchBar style={{ height: 75, backgroundColor: themeStyle.BACKGROUND_COLOUR }} androidStatusBarColor={themeStyle.BACKGROUND_COLOUR}>
+      <Header searchBar style={{ height: 50, backgroundColor: themeStyle.BACKGROUND_COLOUR }} androidStatusBarColor={themeStyle.BACKGROUND_COLOUR}>
         <Item style={{ backgroundColor: "rgba(0, 0, 0, .1)" }}>
           <Icon type="MaterialIcons" name="search" />
           <Input

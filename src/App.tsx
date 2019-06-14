@@ -49,7 +49,7 @@ const TabBar = (props: any) => {
   return (
     <View>
       
-      <View style={{ height: 60, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
+      <View style={{ height: 40, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
         <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, .1)"}}>
           <AdMobBanner
               adSize="smartBanner"
@@ -114,9 +114,9 @@ const TabNavigator = createBottomTabNavigator({
     showLabel: false,
     showIcon: true,
     activeTintColor: themeStyle.TEXT_COLOUR,
-    inactiveTintColor: "rgba(0, 0, 0, .25)",
+    inactiveTintColor: "rgba(0, 0, 0, .4)",
     activeBackgroundColor: themeStyle.BACKGROUND_COLOUR,
-    inactiveBackgroundColor: "rgba(0, 0, 0, .25)",
+    inactiveBackgroundColor: "rgba(0, 0, 0, .4)",
     style: {
       backgroundColor: themeStyle.BACKGROUND_COLOUR,
       borderTopWidth: 0,

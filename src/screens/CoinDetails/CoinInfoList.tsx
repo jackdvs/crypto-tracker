@@ -73,7 +73,7 @@ class CoinInfoList extends Component<Props, State> {
           <View style={{ ...styles.listItem, display: "flex", flexDirection: "row", padding: 0, }}>
 
             <View style={{...styles.listItem, borderBottomWidth: 0}}>
-              <Button style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: themeStyle.ACCENT_COLOUR, }} onPress={() => this.onDescriptionPressed()}>
+              <Button style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: themeStyle.ICON_COLOUR, }} onPress={() => this.onDescriptionPressed()}>
                 <Text style={{ textAlign: "center", color: themeStyle.BACKGROUND_COLOUR, }}>What is {this.props.coin.name}?</Text>
               </Button>
             </View>

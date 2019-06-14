@@ -94,6 +94,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     compileOptions {
@@ -102,7 +103,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.cryptotracker2"
+        applicationId "com.cryptotracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

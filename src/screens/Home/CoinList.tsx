@@ -57,7 +57,7 @@ export class CoinList extends Component<Props> {
         switch (type) {
           case ViewTypes.FULL:
             dim.width = this.SCREEN_WIDTH;
-            dim.height = 75;
+            dim.height = 65;
             break;
           default:
             dim.width = 0;
@@ -196,12 +196,11 @@ const styles = StyleSheet.create({
   },
   coinList: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, .1)',
-    paddingBottom: 3,
+    backgroundColor: 'rgba(0, 0, 0, .1)'
   },
   listItem: {
     flexDirection: 'row',
-    padding: 20,
+    padding: 15,
     marginTop: 5,
     backgroundColor: themeStyle.BACKGROUND_COLOUR,
   },
