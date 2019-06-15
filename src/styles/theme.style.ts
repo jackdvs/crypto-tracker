@@ -8,4 +8,5 @@ export default {
   ACCENT_COLOUR: "#14A76C",
   ICON_COLOUR: "#f4a950",
   DANGER_COLOUR: "#FF652F",
+  COIN_LIST_TOUCH_OPACITY: 0.9,
 }

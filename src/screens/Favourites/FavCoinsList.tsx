@@ -155,6 +155,7 @@ class FavCoinsList extends Component<Props> {
     if (type === ViewTypes.FULL) {
       return (
         <TouchableOpacity
+          activeOpacity={themeStyle.COIN_LIST_TOUCH_OPACITY}
           onPress={() => this.onPressItem(item)}
           onLongPress={() => this.onLongPressItem(item)}>
         <View style={styles.listItem}>

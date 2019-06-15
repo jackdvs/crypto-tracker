@@ -12,6 +12,7 @@ import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from "react-native-orientation";
 import {AdMobBanner} from "react-native-admob";
+import { tsMethodSignature } from '@babel/types';
 
 
 interface IconProps {
@@ -26,7 +27,7 @@ const IconComponent = (props: IconProps) => {
         type="FontAwesome"
         name={props.iconName}
         fontSize={themeStyle.FONT_SIZE_TABBAR}
-        style={{ color: props.tintColour, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
+        style={{ color: props.tintColour, backgroundColor: props.backgroundColor, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
     </View>
   );
 }
@@ -49,8 +50,8 @@ const TabBar = (props: any) => {
   return (
     <View>
       
-      <View style={{ height: 40, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
-        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, .1)"}}>
+      <View style={{ flex: 1, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
+        <View style={{ height: 50, backgroundColor: "rgba(0, 0, 0, .1)"}}>
           <AdMobBanner
               adSize="smartBanner"
               adUnitID="ca-app-pub-2008717089598745/5600665527"
@@ -91,7 +92,12 @@ const TabBar = (props: any) => {
 const TabNavigator = createBottomTabNavigator({
   Home: HomeScreen,
   Favourites: FavouriteCoinsScreen,
-  CoinDetails: CoinDetails,
+  CoinDetails: {
+    screen: CoinDetails,
+    navigationOptions: {
+      tabBarVisible: false,
+    }
+  },
 }, {
   initialRouteName: "Home",
   tabBarComponent: TabBar,
@@ -131,9 +137,7 @@ class App extends Component<Props> {
 
   constructor(props: any) {
     super(props);
-    
     Orientation.lockToPortrait();
-    
   }
 
   render() {
