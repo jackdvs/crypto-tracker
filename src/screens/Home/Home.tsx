@@ -5,17 +5,18 @@ import themeStyle from "../../styles/theme.style";
 import { populateTopCoins, searchCoin } from "../../actions/coinActions";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import CoinList from "./CoinList";
 import { NavigationScreenProp } from "react-navigation";
 import SearchBar from "./SearchBar";
 
-
+import Coins from "../../components/Coins";
+import {ICoin} from "../CoinDetails/ICoin";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   search?: string;
   searchCoin?: any;
   populateTopCoins?: any;
+  coins: ICoin[],
 };
 class HomeScreen extends Component<Props> {
 
@@ -39,8 +40,11 @@ class HomeScreen extends Component<Props> {
       <Container style={styles.container}>
 
         <SearchBar />
-        
-        <CoinList navigation={this.props.navigation} />
+
+        <Coins
+            isFavourites={false}
+            coins={this.props.coins}
+            navigation={this.props.navigation} />
 
       </Container>
     )
@@ -60,7 +64,12 @@ const styles = StyleSheet.create({
 });
 
 function mapStateToProps(state: any) {
+
+  const search: string = state.coin.searchText;
+  const coins: ICoin[] = state.coin.coins;
+
   return {
+    coins: coins.filter(coin => search === "" ? coin : coin.name.toLowerCase().indexOf(search.toLowerCase()) > -1),
     search: state.coin.searchText,
   }
 }

@@ -5,9 +5,9 @@ import themeStyle from "../../styles/theme.style";
 import { ICoinInfo } from "./ICoinInfo";
 import { connect } from "react-redux";
 import striptags from "striptags";
-import { CoinList } from "../Home/CoinList";
 import dateformat from "dateformat";
 import AsyncStorage from "@react-native-community/async-storage";
+import Coins from "../../components/Coins";
 
 interface Props {
   coin: ICoinInfo;
@@ -106,7 +106,7 @@ class CoinInfoList extends Component<Props, State> {
 
           <View style={styles.listItem}>
             <Text style={styles.listItemKey}>Current price</Text>
-            <Text style={styles.listItemValue}>{CoinList.getFormattedPrice(this.props.coin.market_data.current_price.usd)}</Text>
+            <Text style={styles.listItemValue}>{Coins.getStrFormattedPrice(this.props.coin.market_data.current_price.usd)}</Text>
           </View>
 
           <View style={styles.listItem}>

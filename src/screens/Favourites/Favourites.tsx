@@ -3,17 +3,24 @@ import { View } from "native-base";
 import { StyleSheet } from "react-native";
 import themeStyle from "../../styles/theme.style";
 import { NavigationScreenProp } from "react-navigation";
-import FavCoinsList from "./FavCoinsList";
+import Coins, {ICoin} from "../../components/Coins";
+import {connect} from "react-redux";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
+  coins: ICoin[],
 };
-export default class FavouriteScreen extends Component<Props> {
+class FavouriteScreen extends Component<Props> {
 
   render() {
     return (
       <View style={styles.container}>
-        <FavCoinsList navigation={this.props.navigation} />
+
+        <Coins
+            navigation={this.props.navigation}
+            coins={this.props.coins}
+            isFavourites={true} />
+
       </View>
     )
   }
@@ -30,3 +37,16 @@ const styles = StyleSheet.create({
     fontFamily: themeStyle.FONT_DEFAULT
   }
 })
+
+function mapStateToProps(state: any) {
+
+  const coins: ICoin[] = state.coin.coins;
+  const favourites = state.coin.favourites;
+
+  return {
+    coins: coins.filter(coin => favourites.includes(coin.name)),
+  }
+}
+
+
+export default connect(mapStateToProps)(FavouriteScreen);

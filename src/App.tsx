@@ -1,19 +1,16 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, StatusBar, Alert} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './store';
 import { createAppContainer } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container, Icon, Text } from 'native-base';
+import { Container, Icon} from 'native-base';
 import themeStyle from './styles/theme.style';
-import { createBottomTabNavigator } from 'react-navigation';
+import {createBottomTabNavigator} from 'react-navigation';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from "react-native-orientation";
-import {AdMobBanner} from "react-native-admob";
-import { tsMethodSignature } from '@babel/types';
-
 
 interface IconProps {
   routeName: string;
@@ -27,10 +24,10 @@ const IconComponent = (props: IconProps) => {
         type="FontAwesome"
         name={props.iconName}
         fontSize={themeStyle.FONT_SIZE_TABBAR}
-        style={{ color: props.tintColour, backgroundColor: props.backgroundColor, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
+        style={{ color: props.tintColour, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
     </View>
   );
-}
+};
 
 const TabBar = (props: any) => {
 
@@ -49,15 +46,6 @@ const TabBar = (props: any) => {
 
   return (
     <View>
-      
-      <View style={{ flex: 1, backgroundColor: themeStyle.BACKGROUND_COLOUR }}>
-        <View style={{ height: 50, backgroundColor: "rgba(0, 0, 0, .1)"}}>
-          <AdMobBanner
-              adSize="smartBanner"
-              adUnitID="ca-app-pub-2008717089598745/5600665527"
-              onAdFailedToLoad={(error: any) => console.log('[ERROR]: error fetching ad: ' + error.message)} />
-        </View>
-      </View>
 
       <View style={styles.tabBar}>
 
@@ -68,6 +56,8 @@ const TabBar = (props: any) => {
           const isRouteActive = index === activeRouteIndex;
           const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
 
+          const bgColor: string = isRouteActive ?  "red" : "red";
+
           return (
             <TouchableOpacity
               activeOpacity={1}
@@ -77,13 +67,14 @@ const TabBar = (props: any) => {
               onLongPress={() => onTabLongPress({ route })}
               accessibilityLabel={getAccessibilityLabel({ route })}
             >
-              {renderIcon({ route, focused: isRouteActive, tintColor })}
+              {renderIcon({ route, focused: isRouteActive, tintColor, backgroundColor: bgColor })}
             </TouchableOpacity>
           )
 
         })}
 
       </View>
+
     </View>
   );
 
@@ -100,6 +91,7 @@ const TabNavigator = createBottomTabNavigator({
   },
 }, {
   initialRouteName: "Home",
+  swipeEnabled: true,
   tabBarComponent: TabBar,
   defaultNavigationOptions: ({ navigation }) => ({
     tabBarIcon: ({ focused, horizontal, tintColor }) => {
@@ -125,7 +117,6 @@ const TabNavigator = createBottomTabNavigator({
     inactiveBackgroundColor: "rgba(0, 0, 0, .4)",
     style: {
       backgroundColor: themeStyle.BACKGROUND_COLOUR,
-      borderTopWidth: 0,
     }
   }
 });
@@ -144,7 +135,6 @@ class App extends Component<Props> {
     return (
       <Provider store={store}>
         <Container style={styles.container}>
-          <StatusBar backgroundColor={themeStyle.STATUS_BAR_COLOUR} />
           <AppNavigator />
         </Container>
       </Provider>
@@ -168,6 +158,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    borderBottomWidth: 1,
+    backgroundColor: themeStyle.BACKGROUND_COLOUR,
+    borderBottomColor: "rgba(0, 0, 0, .1)",
   }
 });
 
