@@ -9,23 +9,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { populateTopCoins, populateFavourites, removeFromFavourites, setSelectedCoinInfo } from "../actions/coinActions";
 import { NavigationScreenProp } from "react-navigation";
 import themeStyle from "../styles/theme.style";
-import AsyncSorage from "@react-native-community/async-storage";
 import AsyncStorage from "@react-native-community/async-storage";
+import { ICoin } from "../screens/CoinDetails/ICoin";
+// @ts-ignore
+import {AdMobBanner} from "react-native-admob";
 
 const ViewTypes = {
     FULL: 0,
     HALF_LEFT: 0,
     HALF_RIGHT: 2,
-}
-
-export interface ICoin {
-    id: string;
-    symbol: string;
-    name: string;
-    image: string;
-    market_cap_rank: number;
-    price_change_percentage_24h: number;
-    current_price: number;
 };
 
 interface Props {
@@ -79,6 +71,7 @@ class Coins extends Component<Props> {
             <View style={styles.coinList}>
                 { this.props.coins.length > 0 ?
                     <View style={{ flex: 1, }}>
+
                         <View style={{ flexDirection: 'row', padding: 10, backgroundColor: themeStyle.BACKGROUND_COLOUR, }}>
                             <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-start', marginLeft: 15 }}>
                                 <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>Name</Text>
@@ -88,6 +81,7 @@ class Coins extends Component<Props> {
                                 <Text style={{ fontFamily: themeStyle.FONT_DEFAULT, fontSize: themeStyle.FONT_SIZE_DEFAULT, color: themeStyle.TEXT_COLOUR }}>24H</Text>
                             </View>
                         </View>
+
                         <RecyclerListView
                             layoutProvider={this.layoutProvider}
                             dataProvider={this.dataProvider.cloneWithRows(this.props.coins)}
@@ -98,6 +92,7 @@ class Coins extends Component<Props> {
                                         refreshing={this.props.refreshing||false}
                                         onRefresh={this.onRefresh.bind(this)} />
                             }} />
+                            
                     </View>
                     :
                     this.props.search === "" && !this.props.isFavourites ?
@@ -141,12 +136,12 @@ class Coins extends Component<Props> {
             Alert.alert("Removed favourite", "Removed " + item.name + " from your favourites!");
         }
         else {
-            let favourites: string|any = await AsyncSorage.getItem("favourites");
+            let favourites: string|any = await AsyncStorage.getItem("favourites");
             if (!favourites) {
-                await AsyncSorage.setItem("favourites", JSON.stringify([]));
+                await AsyncStorage.setItem("favourites", JSON.stringify([]));
             }
 
-            favourites = await AsyncSorage.getItem("favourites");
+            favourites = await AsyncStorage.getItem("favourites");
             favourites = JSON.parse(favourites);
 
 
@@ -177,29 +172,11 @@ class Coins extends Component<Props> {
     }
 
 
-    private getPercentColour(coin: ICoin): string {
+    getPercentColour(coin: ICoin): string {
         return coin.price_change_percentage_24h >= 0 ? themeStyle.ACCENT_COLOUR : themeStyle.DANGER_COLOUR;
     }
 
-    private renderAdBanner() {
-        return (
-            <TouchableOpacity>
-            <View style={{ ...styles.listItem,  }}>
-
-                <View style={styles.listItemLeft}>
-                    <Text>Left</Text>
-                </View>
-
-                <View style={styles.listItemRight}>
-                    <Text>Right</Text>
-                </View>
-
-            </View>
-            </TouchableOpacity>
-        )
-    }
-
-    private renderItem(type: any, data: any, index: number) {
+    renderItem(type: any, data: any, index: number) {
 
         const item: ICoin = data;
 

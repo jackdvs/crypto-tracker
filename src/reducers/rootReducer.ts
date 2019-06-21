@@ -1,5 +1,4 @@
-import { Reducer, combineReducers } from "redux";
-import { Alert } from "react-native";
+import { Reducer } from "redux";
 
 
 export const ACTION_SET_TITLE: string = "ROOT_SET_TITLE";
@@ -9,7 +8,7 @@ export interface IRootReducer {
 } 
 
 const initialState: any = {
-  title: "Crypto Tracker 2"
+  title: "Crypto Tracker 2",
 };
 
 function rootReducer(state=initialState, action: any): Reducer {

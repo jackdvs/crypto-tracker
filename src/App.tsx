@@ -1,39 +1,22 @@
 import React, {Component} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, BackHandler, Alert} from 'react-native';
 import {Provider} from 'react-redux';
 import store from './store';
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container, Icon} from 'native-base';
+import { Container } from 'native-base';
 import themeStyle from './styles/theme.style';
-import {createBottomTabNavigator} from 'react-navigation';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from "react-native-orientation";
-
-interface IconProps {
-  routeName: string;
-  iconName: string;
-  tintColour: any;
-}
-const IconComponent = (props: IconProps) => {
-  return (
-    <View>
-      <Icon
-        type="FontAwesome"
-        name={props.iconName}
-        fontSize={themeStyle.FONT_SIZE_TABBAR}
-        style={{ color: props.tintColour, fontSize: themeStyle.FONT_SIZE_TABBAR }} />
-    </View>
-  );
-};
+import IconComponent from './components/TabBarIcon';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const TabBar = (props: any) => {
 
   const {
     renderIcon,
-    getLabelText,
     activeTintColor,
     inactiveTintColor,
     onTabPress,
@@ -53,21 +36,26 @@ const TabBar = (props: any) => {
           .filter((route: any, index: number) => route.routeName !== "CoinDetails")
           .map((route: any, index: number) => {
           
-          const isRouteActive = index === activeRouteIndex;
-          const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
+            const isRouteActive = index === activeRouteIndex;
+            const tintColor = isRouteActive ? activeTintColor : inactiveTintColor;
 
-          const bgColor: string = isRouteActive ?  "red" : "red";
+            const bgColor: string = isRouteActive ?  "red" : "red";
 
-          return (
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.tabBarItem}
-              key={index}
-              onPress={() => onTabPress({ route })}
-              onLongPress={() => onTabLongPress({ route })}
-              accessibilityLabel={getAccessibilityLabel({ route })}
-            >
-              {renderIcon({ route, focused: isRouteActive, tintColor, backgroundColor: bgColor })}
+            return (
+              <TouchableOpacity
+                activeOpacity={1}
+                style={styles.tabBarItem}
+                key={index}
+                onPress={async () => {
+
+                  await AsyncStorage.setItem("screen", route.routeName);
+
+                  return onTabPress({ route });
+                }}
+                onLongPress={() => onTabLongPress({ route })}
+                accessibilityLabel={getAccessibilityLabel({ route })}
+              >
+                {renderIcon({ route, focused: isRouteActive, tintColor, backgroundColor: bgColor })}
             </TouchableOpacity>
           )
 
@@ -80,7 +68,7 @@ const TabBar = (props: any) => {
 
 }
 
-const TabNavigator = createBottomTabNavigator({
+const routeConfig: any = {
   Home: HomeScreen,
   Favourites: FavouriteCoinsScreen,
   CoinDetails: {
@@ -89,23 +77,26 @@ const TabNavigator = createBottomTabNavigator({
       tabBarVisible: false,
     }
   },
-}, {
-  initialRouteName: "Home",
+};
+
+const tabNavigatorOptions: any = {
   swipeEnabled: true,
   tabBarComponent: TabBar,
-  defaultNavigationOptions: ({ navigation }) => ({
-    tabBarIcon: ({ focused, horizontal, tintColor }) => {
-      const { routeName } =  navigation.state;
+  defaultNavigationOptions: ({ navigation } : { navigation: any }) => ({
+    tabBarIcon: ({ focused, horizontal, tintColor }: { focused: any, horizontal: any, tintColor: any }) => {
+      
+      const { routeName, index } =  navigation.state;
+
       let iconName: string = "";
       switch (routeName) {
         case "Home":
           iconName = "home";
           break;
         case "Favourites":
-          iconName = "star";
+          iconName = "favorite";
           break;
       }
-      return <IconComponent iconName={iconName} routeName={routeName} tintColour={tintColor} />
+      return <IconComponent routeIndex={index} iconName={iconName} routeName={routeName} tintColour={tintColor} />
     }
   }),
   tabBarOptions: {
@@ -119,23 +110,47 @@ const TabNavigator = createBottomTabNavigator({
       backgroundColor: themeStyle.BACKGROUND_COLOUR,
     }
   }
+};
+
+const TabNavigator = (initialRouteName: string) => createBottomTabNavigator(routeConfig, {
+  ...tabNavigatorOptions,
+  initialRouteName,
 });
 
-const AppNavigator = createAppContainer(TabNavigator);
+const AppNavHome = createAppContainer(TabNavigator("Home"));
+const AppNavFavs = createAppContainer(TabNavigator("Favourites"));
 
-interface Props {}
-class App extends Component<Props> {
+
+
+interface Props {};
+interface State {
+  screen: any;
+};
+class App extends Component<Props, State> {
+  
+  state = {
+    screen: null,
+  };
 
   constructor(props: any) {
     super(props);
+    console.disableYellowBox = true;
     Orientation.lockToPortrait();
+    (async () => {
+      const screen: string|null = await AsyncStorage.getItem("screen") || null;
+      this.setState({ screen });
+    })();
   }
 
   render() {
     return (
       <Provider store={store}>
         <Container style={styles.container}>
-          <AppNavigator />
+          {this.state.screen !== null
+            ? this.state.screen === "Home"
+              ? <AppNavHome />
+              : <AppNavFavs />
+            : null}
         </Container>
       </Provider>
     );
@@ -163,5 +178,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(0, 0, 0, .1)",
   }
 });
+
+
 
 export default App;
