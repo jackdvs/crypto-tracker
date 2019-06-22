@@ -106,7 +106,7 @@ android {
         applicationId "com.jackdvs.cryptotracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
+        versionCode 18
         versionName "2.0"
     }
     splits {
