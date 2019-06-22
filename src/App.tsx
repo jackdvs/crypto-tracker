@@ -5,7 +5,7 @@ import store from './store';
 import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
 import HomeScreen from './screens/Home/Home';
 import FavouriteCoinsScreen from "./screens/Favourites/Favourites";
-import { Container } from 'native-base';
+import { Container, Text } from 'native-base';
 import themeStyle from './styles/theme.style';
 import CoinDetails from './screens/CoinDetails/CoinDetails';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -138,6 +138,9 @@ class App extends Component<Props, State> {
     Orientation.lockToPortrait();
     (async () => {
       const screen: string|null = await AsyncStorage.getItem("screen") || null;
+      if (screen === null) {
+        await AsyncStorage.setItem("screen", "Home");
+      }
       this.setState({ screen });
     })();
   }
