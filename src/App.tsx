@@ -137,9 +137,10 @@ class App extends Component<Props, State> {
     console.disableYellowBox = true;
     Orientation.lockToPortrait();
     (async () => {
-      const screen: string|null = await AsyncStorage.getItem("screen") || null;
+      let screen: string|null = await AsyncStorage.getItem("screen") || null;
       if (screen === null) {
         await AsyncStorage.setItem("screen", "Home");
+        screen = await AsyncStorage.getItem("screen");
       }
       this.setState({ screen });
     })();
