@@ -1,15 +1,9 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="android:navigationBarColor">@color/backgroundColor</item>
-        <item name="android:statusBarColor">@color/backgroundColor</item>
-        <item name="android:windowBackground">@color/backgroundColor</item>
-    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/launch_screen</item>
+
     </style>
 
 </resources>

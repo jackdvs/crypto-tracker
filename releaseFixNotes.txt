@@ -1,0 +1,23 @@
+make sure to change compileVersion and targetSdkVersion in the react-native-admob node_modules to match project
+
+-------------------------
+/android/build.gradle
+-------------------------
+subprojects {
+  project.configurations.all {
+      afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 26
+                buildToolsVersion '26.0.2'
+            }
+        }
+    }
+     resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.android.support'
+              && !details.requested.name.contains('multidex') ) {
+           details.useVersion "26.0.2"
+        }
+     }
+  }
+}

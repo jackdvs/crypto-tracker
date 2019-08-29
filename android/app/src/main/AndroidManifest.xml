@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.cryptotracker2">
+    package="com.jackdvs.cryptotracker">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
     <application
       android:name=".MainApplication"
@@ -9,13 +10,9 @@
       android:icon="@mipmap/ic_launcher"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
-      
       <meta-data
         android:name="com.google.android.gms.ads.APPLICATION_ID"
         android:value="ca-app-pub-2008717089598745~6750095668"/>
-
-      <uses-library android:name="org.apache.http.legacy" android:required="false"/>
-
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
